@@ -11,7 +11,7 @@ const port = Number(process.env.PORT ?? 8000);
 
 app.use(express.json());
 app.use((request, response, next) => {
-  response.setHeader("Access-Control-Allow-Origin", "http://127.0.0.1:7000");
+  response.setHeader("Access-Control-Allow-Origin", ["http://127.0.0.1:7000", "https://mcp-demo-liard.vercel.app/", "https://mcp-demo-ms1j.onrender.com/"]);
   response.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS");
   response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept, mcp-session-id, mcp-protocol-version, last-event-id");
   response.setHeader("Access-Control-Expose-Headers", "mcp-session-id");
