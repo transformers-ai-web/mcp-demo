@@ -20,16 +20,33 @@ app.use((request, response, next) => {
 });
 
 let mcpClient;
+let mcpInitialization;
 let availableTools = [];
 
 async function getMcpClient() {
   if (mcpClient) return mcpClient;
-  const transport = new StreamableHTTPClientTransport(new URL(mcpUrl));
-  mcpClient = new Client({ name: "fieldnote-agent-backend", version: "1.0.0" });
-  await mcpClient.connect(transport);
-  const result = await mcpClient.listTools();
-  availableTools = result.tools;
-  return mcpClient;
+  if (!mcpInitialization) {
+    // All requests share this attempt until connection and discovery finish.
+    mcpInitialization = (async () => {
+      const transport = new StreamableHTTPClientTransport(new URL(mcpUrl));
+      const client = new Client({ name: "fieldnote-agent-backend", version: "1.0.0" });
+      try {
+        await client.connect(transport);
+        const result = await client.listTools();
+        availableTools = result.tools;
+        mcpClient = client;
+        return client;
+      } catch (error) {
+        // Clean up the failed attempt without hiding its original error.
+        await client.close().catch(() => {});
+        throw error;
+      }
+    })().finally(() => {
+      // A failed attempt must not prevent a later request from retrying.
+      mcpInitialization = undefined;
+    });
+  }
+  return mcpInitialization;
 }
 
 function toolDefinitions() {
