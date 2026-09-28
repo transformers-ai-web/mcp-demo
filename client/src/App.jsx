@@ -22,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL ?? "http://127.0.0.1:7000";
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL ?? "http://127.0.0.1:7000").trim().replace(/\/+$/, "");
 const STARTER_MESSAGE = {
   role: "assistant",
   text: "Your tools are ready when the server connects. Try a calculation, ask for the time, or echo a note.",

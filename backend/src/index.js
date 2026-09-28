@@ -7,11 +7,16 @@ const app = express();
 const port = Number(process.env.PORT ?? 7000);
 const mcpUrl = process.env.MCP_SERVER_URL ?? "http://127.0.0.1:8000/mcp";
 const llmUrl = process.env.GROQ_CHAT_COMPLETIONS_URL ?? "https://api.groq.com/openai/v1/chat/completions";
-const allowedOrigins = new Set(["http://localhost:5173", "http://127.0.0.1:5173", process.env.CLIENT_ORIGIN].filter(Boolean));
+const allowedOrigins = new Set(
+  ["http://localhost:5173", "http://127.0.0.1:5173", process.env.CLIENT_ORIGIN]
+    .filter(Boolean)
+    .map((origin) => origin.trim().replace(/\/+$/, "")),
+);
 
 app.use(express.json());
 app.use((request, response, next) => {
   const origin = request.get("Origin");
+  response.vary("Origin");
   if (origin && allowedOrigins.has(origin)) response.setHeader("Access-Control-Allow-Origin", origin);
   response.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   response.setHeader("Access-Control-Allow-Headers", "Content-Type, Accept");

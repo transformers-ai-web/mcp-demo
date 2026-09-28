@@ -39,3 +39,13 @@ Open the Vite URL shown in the client terminal (normally `http://localhost:5173`
 Quick demo mode calls the application backend, which calls MCP tools. AI agent mode sends chat requests to the application backend; it owns the Groq key, connects to MCP, executes model-requested tools, and returns the final answer. The browser never connects to MCP or receives the API key. The local demo has no user authentication; keep all services bound to loopback and do not expose them to a network.
 
 Set `VITE_BACKEND_URL` before starting the client to use a different application backend.
+
+## Deployment environment
+
+Deploy `server/` and `backend/` as separate Node services, and `client/` as the frontend.
+
+- On the backend service, set `MCP_SERVER_URL=https://<mcp-server-host>/mcp` and `CLIENT_ORIGIN=https://mcp-demo-liard.vercel.app`.
+- On the frontend service, set `VITE_BACKEND_URL=https://mcp-demo-ms1j.onrender.com`.
+- Redeploy the backend after changing its environment. Rebuild and redeploy the frontend after changing `VITE_BACKEND_URL`, since Vite embeds it at build time.
+
+Use the frontend origin without a path for `CLIENT_ORIGIN`. The MCP URL points to the service running `server/src/index.js`.
